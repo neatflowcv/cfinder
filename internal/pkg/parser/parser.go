@@ -133,6 +133,7 @@ func isFunctionName(part []byte) bool {
 		[]byte("for"),
 		[]byte("while"),
 		[]byte("switch"),
+		[]byte("return"),
 	}, func(d []byte) bool {
 		return slices.Equal(d, part)
 	}) {
