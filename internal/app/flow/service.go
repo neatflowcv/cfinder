@@ -116,15 +116,15 @@ func (s *Service) ListSymbols(ctx context.Context, dir string, excludes []string
 		s.printer.Print("%s\n", group.Definitions[0].Name)
 
 		for _, definition := range group.Definitions {
-			s.printer.Print(" - definition %s %s:%d\n", kind[definition.Kind], definition.Path, definition.Line)
+			s.printer.Print(" - %s %s:%d\n", kind[definition.Kind], definition.Path, definition.Line)
 		}
 
 		for _, declaration := range group.Declarations {
-			s.printer.Print(" - declaration %s:%d\n", declaration.Path, declaration.Line)
+			s.printer.Print(" - %s %s:%d\n", kind[declaration.Kind], declaration.Path, declaration.Line)
 		}
 
 		for _, call := range group.Calls {
-			s.printer.Print(" - call %s:%d\n", call.Path, call.Line)
+			s.printer.Print(" - %s %s:%d\n", kind[call.Kind], call.Path, call.Line)
 		}
 	}
 
