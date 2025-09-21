@@ -1,12 +1,12 @@
 package domain
 
 type Group struct {
-	Definition  *Symbol
-	Declaration *Symbol
-	Calls       []*Symbol
+	Definition   *Symbol
+	Declarations []*Symbol
+	Calls        []*Symbol
 }
 
-func NewGroups(symbols []*Symbol) []*Group { //nolint:cyclop
+func NewGroups(symbols []*Symbol) []*Group {
 	symbolGroup := groupBy(symbols, func(s *Symbol) string {
 		return s.Name
 	})
@@ -40,14 +40,10 @@ func NewGroups(symbols []*Symbol) []*Group { //nolint:cyclop
 			panic("definitions > 2")
 		}
 
-		if len(declarations) > 2 { //nolint:mnd
-			panic("declarations > 2")
-		}
-
 		ret = append(ret, &Group{
-			Definition:  getFirst(definitions),
-			Declaration: getFirst(declarations),
-			Calls:       calls,
+			Definition:   getFirst(definitions),
+			Declarations: declarations,
+			Calls:        calls,
 		})
 	}
 

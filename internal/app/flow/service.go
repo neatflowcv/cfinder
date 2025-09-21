@@ -65,7 +65,7 @@ func (s *Service) FindSymbol(ctx context.Context, dir string, symbol string) err
 	return nil
 }
 
-func (s *Service) ListSymbols(ctx context.Context, dir string, excludes []string) error { //nolint:cyclop,funlen
+func (s *Service) ListSymbols(ctx context.Context, dir string, excludes []string) error { //nolint:cyclop
 	files, err := s.filesystem.ListFiles(ctx, dir, excludes)
 	if err != nil {
 		return fmt.Errorf("ListFiles: %w", err)
@@ -111,16 +111,10 @@ func (s *Service) ListSymbols(ctx context.Context, dir string, excludes []string
 
 			s.printer.Print("%s\n", group.Definition.Name)
 
-			if len(group.Calls) == 0 {
-				s.printer.Print(" - no call %s %s:%d\n", kind[group.Definition.Kind], group.Definition.Path, group.Definition.Line)
-
-				continue
-			}
-
 			s.printer.Print(" - %s %s:%d\n", kind[group.Definition.Kind], group.Definition.Path, group.Definition.Line)
 
-			if group.Declaration != nil {
-				s.printer.Print(" - declaration %s:%d\n", group.Declaration.Path, group.Declaration.Line)
+			for _, declaration := range group.Declarations {
+				s.printer.Print(" - declaration %s:%d\n", declaration.Path, declaration.Line)
 			}
 
 			for _, call := range group.Calls {
