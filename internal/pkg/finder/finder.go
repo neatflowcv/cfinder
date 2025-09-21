@@ -5,6 +5,8 @@ import (
 	"bytes"
 	"io"
 	"regexp"
+
+	"github.com/neatflowcv/cfinder/internal/pkg/domain"
 )
 
 type Finder struct {
@@ -15,10 +17,10 @@ func NewFinder(reader io.Reader) *Finder {
 	return &Finder{reader: bufio.NewReader(reader)}
 }
 
-func (f *Finder) FindSymbol(symbol string) []*SymbolLocation { //nolint:cyclop
+func (f *Finder) FindSymbol(symbol string) []*domain.Symbol { //nolint:cyclop
 	iter := 0
 
-	var locations []*SymbolLocation
+	var locations []*domain.Symbol
 
 	inComment := false
 
@@ -61,7 +63,7 @@ func (f *Finder) FindSymbol(symbol string) []*SymbolLocation { //nolint:cyclop
 
 		matched, err := regexp.Match(pattern, part)
 		if err == nil && matched {
-			locations = append(locations, NewSymbolLocation(symbol, FunctionCall, iter))
+			locations = append(locations, domain.NewSymbol(symbol, domain.FunctionCall, iter))
 		}
 	}
 
