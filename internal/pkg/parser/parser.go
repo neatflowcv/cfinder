@@ -19,7 +19,7 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(content []byte) []*domain.Symbol { //nolint:funlen
+func (p *Parser) Parse(content []byte) []*domain.Symbol { //nolint:funlen,cyclop
 	delimiters := [][]byte{
 		[]byte("//"),
 		[]byte("/*"),
@@ -94,39 +94,17 @@ func (p *Parser) Parse(content []byte) []*domain.Symbol { //nolint:funlen
 			continue
 		}
 
-		ret = append(ret, domain.NewSymbol(string(filtered[match.Start-1]), domain.FunctionCall, line))
+		switch {
+		case bytes.Equal(filtered[match.End+1], []byte("{")):
+			ret = append(ret, domain.NewSymbol(string(filtered[match.Start-1]), domain.FunctionDefinition, line))
+		case bytes.Equal(filtered[match.End+1], []byte(";")):
+			ret = append(ret, domain.NewSymbol(string(filtered[match.Start-1]), domain.FunctionDeclaration, line))
+		default:
+			ret = append(ret, domain.NewSymbol(string(filtered[match.Start-1]), domain.FunctionCall, line))
+		}
 	}
 
 	return ret
-
-	// matchIdx := 0
-	// line := 1
-
-	// for idx, part := range filtered {
-	// 	if bytes.Equal(part, []byte("\n")) {
-	// 		line++
-
-	// 		continue
-	// 	}
-
-	// 	if bytes.Equal(part, []byte("\\\n")) {
-	// 		line++
-
-	// 		continue
-	// 	}
-
-	// 	if matchIdx < len(matches) && idx == matches[matchIdx].Start {
-	// 		matchIdx++
-	// 	}
-
-	// 	if !isFunctionName(filtered[idx-1]) {
-	// 		continue
-	// 	}
-
-	// 	ret = append(ret, domain.NewSymbol(string(filtered[idx-1]), domain.FunctionCall, line))
-	// }
-
-	// return ret
 }
 
 func (p *Parser) ParseFile(reader io.Reader) ([]*domain.Symbol, error) {

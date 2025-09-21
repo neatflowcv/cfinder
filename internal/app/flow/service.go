@@ -6,6 +6,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/neatflowcv/cfinder/internal/pkg/domain"
 	"github.com/neatflowcv/cfinder/internal/pkg/filesystem"
 	"github.com/neatflowcv/cfinder/internal/pkg/finder"
 	"github.com/neatflowcv/cfinder/internal/pkg/parser"
@@ -95,8 +96,14 @@ func (s *Service) ListSymbols(ctx context.Context, dir string) error {
 
 		_ = file.Close()
 
+		kind := map[domain.SymbolKind]string{
+			domain.FunctionDefinition:  "definition",
+			domain.FunctionDeclaration: "declaration",
+			domain.FunctionCall:        "call",
+		}
+
 		for _, symbol := range symbols {
-			s.printer.Print("%s:%d %s\n", path, symbol.Line, symbol.Name)
+			s.printer.Print("%s %s:%d %s\n", kind[symbol.Kind], path, symbol.Line, symbol.Name)
 		}
 	}
 
