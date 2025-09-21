@@ -128,7 +128,12 @@ func isFunctionName(part []byte) bool {
 		return false
 	}
 
-	if slices.ContainsFunc([][]byte{[]byte("if"), []byte("for"), []byte("while")}, func(d []byte) bool {
+	if slices.ContainsFunc([][]byte{
+		[]byte("if"),
+		[]byte("for"),
+		[]byte("while"),
+		[]byte("switch"),
+	}, func(d []byte) bool {
 		return slices.Equal(d, part)
 	}) {
 		return false
