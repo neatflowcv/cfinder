@@ -19,7 +19,7 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(content []byte) []*domain.Symbol { //nolint:funlen,cyclop
+func (p *Parser) Parse(path string, content []byte) []*domain.Symbol { //nolint:funlen,cyclop
 	delimiters := [][]byte{
 		[]byte("//"),
 		[]byte("/*"),
@@ -94,26 +94,30 @@ func (p *Parser) Parse(content []byte) []*domain.Symbol { //nolint:funlen,cyclop
 			continue
 		}
 
+		var symbol *domain.Symbol
+
 		switch {
 		case bytes.Equal(filtered[match.End+1], []byte("{")):
-			ret = append(ret, domain.NewSymbol(string(filtered[match.Start-1]), domain.FunctionDefinition, line))
+			symbol = domain.NewSymbol(domain.FunctionDefinition, string(filtered[match.Start-1]), path, line)
 		case bytes.Equal(filtered[match.End+1], []byte(";")):
-			ret = append(ret, domain.NewSymbol(string(filtered[match.Start-1]), domain.FunctionDeclaration, line))
+			symbol = domain.NewSymbol(domain.FunctionDeclaration, string(filtered[match.Start-1]), path, line)
 		default:
-			ret = append(ret, domain.NewSymbol(string(filtered[match.Start-1]), domain.FunctionCall, line))
+			symbol = domain.NewSymbol(domain.FunctionCall, string(filtered[match.Start-1]), path, line)
 		}
+
+		ret = append(ret, symbol)
 	}
 
 	return ret
 }
 
-func (p *Parser) ParseFile(reader io.Reader) ([]*domain.Symbol, error) {
+func (p *Parser) ParseFile(path string, reader io.Reader) ([]*domain.Symbol, error) {
 	content, err := io.ReadAll(reader)
 	if err != nil {
 		return nil, fmt.Errorf("ReadAll: %w", err)
 	}
 
-	return p.Parse(content), nil
+	return p.Parse(path, content), nil
 }
 
 func isFunctionName(part []byte) bool {

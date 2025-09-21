@@ -17,9 +17,10 @@ func TestFinder_FindSymbol(t *testing.T) {
 
 	finder := finder.NewFinder(bytes.NewReader(testFileContent))
 
-	symbols := finder.FindSymbol("abc_def_ghijkl")
+	symbols := finder.FindSymbol("abc_def_ghijkl.c", "abc_def_ghijkl")
 
 	require.Len(t, symbols, 1)
 	require.Equal(t, "abc_def_ghijkl", symbols[0].Name)
+	require.Equal(t, "abc_def_ghijkl.c", symbols[0].Path)
 	require.Equal(t, 4, symbols[0].Line)
 }

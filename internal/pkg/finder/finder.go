@@ -17,7 +17,7 @@ func NewFinder(reader io.Reader) *Finder {
 	return &Finder{reader: bufio.NewReader(reader)}
 }
 
-func (f *Finder) FindSymbol(symbol string) []*domain.Symbol { //nolint:cyclop
+func (f *Finder) FindSymbol(path string, symbol string) []*domain.Symbol { //nolint:cyclop
 	iter := 0
 
 	var locations []*domain.Symbol
@@ -63,7 +63,7 @@ func (f *Finder) FindSymbol(symbol string) []*domain.Symbol { //nolint:cyclop
 
 		matched, err := regexp.Match(pattern, part)
 		if err == nil && matched {
-			locations = append(locations, domain.NewSymbol(symbol, domain.FunctionCall, iter))
+			locations = append(locations, domain.NewSymbol(domain.FunctionCall, symbol, path, iter))
 		}
 	}
 

@@ -1,8 +1,9 @@
 package domain
 
 type Symbol struct {
-	Name string
 	Kind SymbolKind
+	Name string
+	Path string
 	Line int
 }
 
@@ -14,6 +15,6 @@ const (
 	FunctionCall
 )
 
-func NewSymbol(name string, kind SymbolKind, line int) *Symbol {
-	return &Symbol{Name: name, Kind: kind, Line: line}
+func NewSymbol(kind SymbolKind, name string, path string, line int) *Symbol {
+	return &Symbol{Path: path, Name: name, Kind: kind, Line: line}
 }

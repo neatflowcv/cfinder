@@ -51,13 +51,13 @@ func (s *Service) FindSymbol(ctx context.Context, dir string, symbol string) err
 		}
 
 		finder := finder.NewFinder(file)
-		symbols := finder.FindSymbol(symbol)
+		symbols := finder.FindSymbol(path, symbol)
 
 		_ = file.Close()
 
 		if len(symbols) > 0 {
 			for _, symbol := range symbols {
-				s.printer.Print("%s:%d\n", path, symbol.Line)
+				s.printer.Print("%s:%d\n", symbol.Path, symbol.Line)
 			}
 		}
 	}
@@ -89,7 +89,7 @@ func (s *Service) ListSymbols(ctx context.Context, dir string) error {
 
 		parser := parser.NewParser()
 
-		symbols, err := parser.ParseFile(file)
+		symbols, err := parser.ParseFile(path, file)
 		if err != nil {
 			return fmt.Errorf("ParseFile: %w", err)
 		}
@@ -103,7 +103,7 @@ func (s *Service) ListSymbols(ctx context.Context, dir string) error {
 		}
 
 		for _, symbol := range symbols {
-			s.printer.Print("%s %s:%d %s\n", kind[symbol.Kind], path, symbol.Line, symbol.Name)
+			s.printer.Print("%s %s:%d %s\n", kind[symbol.Kind], symbol.Path, symbol.Line, symbol.Name)
 		}
 	}
 
