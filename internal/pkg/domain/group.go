@@ -6,7 +6,7 @@ type Group struct {
 	Calls       []*Symbol
 }
 
-func NewGroups(symbols []*Symbol) []*Group {
+func NewGroups(symbols []*Symbol) []*Group { //nolint:cyclop
 	symbolGroup := groupBy(symbols, func(s *Symbol) string {
 		return s.Name
 	})
@@ -15,38 +15,51 @@ func NewGroups(symbols []*Symbol) []*Group {
 
 	for _, group := range symbolGroup {
 		var (
-			definition  *Symbol
-			declaration *Symbol
-			calls       []*Symbol
+			definitions  []*Symbol
+			declarations []*Symbol
+			calls        []*Symbol
 		)
 
 		for _, symbol := range group {
 			switch symbol.Kind {
 			case FunctionDefinition:
-				if definition != nil {
-					panic("definition already exists")
-				}
-
-				definition = symbol
+				definitions = append(definitions, symbol)
 			case FunctionDeclaration:
-				if declaration != nil {
-					panic("declaration already exists")
-				}
-
-				declaration = symbol
+				declarations = append(declarations, symbol)
 			case FunctionCall:
 				calls = append(calls, symbol)
 			}
 		}
 
+		if len(definitions) > 0 && len(declarations) == 0 && len(calls) == 0 {
+			// define 함수일 수 있다.
+			continue
+		}
+
+		if len(definitions) > 2 { //nolint:mnd
+			panic("definitions > 2")
+		}
+
+		if len(declarations) > 2 { //nolint:mnd
+			panic("declarations > 2")
+		}
+
 		ret = append(ret, &Group{
-			Definition:  definition,
-			Declaration: declaration,
+			Definition:  getFirst(definitions),
+			Declaration: getFirst(declarations),
 			Calls:       calls,
 		})
 	}
 
 	return ret
+}
+
+func getFirst(s []*Symbol) *Symbol {
+	if len(s) == 0 {
+		return nil
+	}
+
+	return s[0]
 }
 
 func groupBy[T any, K comparable](s []T, keyFunc func(T) K) map[K][]T {
