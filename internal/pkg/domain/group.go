@@ -23,8 +23,16 @@ func NewGroups(symbols []*Symbol) []*Group {
 		for _, symbol := range group {
 			switch symbol.Kind {
 			case FunctionDefinition:
+				if definition != nil {
+					panic("definition already exists")
+				}
+
 				definition = symbol
 			case FunctionDeclaration:
+				if declaration != nil {
+					panic("declaration already exists")
+				}
+
 				declaration = symbol
 			case FunctionCall:
 				calls = append(calls, symbol)
