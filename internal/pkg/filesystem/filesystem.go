@@ -6,6 +6,6 @@ import (
 )
 
 type Filesystem interface {
-	ListFiles(ctx context.Context, dir string) ([]string, error)
+	ListFiles(ctx context.Context, dir string, excludes []string) ([]string, error)
 	OpenFile(ctx context.Context, path string) (io.ReadCloser, error)
 }

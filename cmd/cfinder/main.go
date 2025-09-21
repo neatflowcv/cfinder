@@ -37,6 +37,11 @@ func main() {
 				Value: ".",
 				Usage: "directory path",
 			},
+			&cli.StringSliceFlag{ //nolint:exhaustruct
+				Name:  "excludes",
+				Value: nil,
+				Usage: "exclude",
+			},
 		},
 		Commands: []*cli.Command{
 			{
@@ -55,8 +60,9 @@ func main() {
 				Name: "symbols",
 				Action: func(ctx context.Context, c *cli.Command) error {
 					dir := c.String("dir")
+					excludes := c.StringSlice("excludes")
 
-					return service.ListSymbols(ctx, dir)
+					return service.ListSymbols(ctx, dir, excludes)
 				},
 			},
 		},

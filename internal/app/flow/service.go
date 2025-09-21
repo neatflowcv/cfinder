@@ -29,7 +29,7 @@ func NewService(
 }
 
 func (s *Service) FindSymbol(ctx context.Context, dir string, symbol string) error {
-	files, err := s.filesystem.ListFiles(ctx, dir)
+	files, err := s.filesystem.ListFiles(ctx, dir, nil)
 	if err != nil {
 		return fmt.Errorf("ListFiles: %w", err)
 	}
@@ -65,8 +65,8 @@ func (s *Service) FindSymbol(ctx context.Context, dir string, symbol string) err
 	return nil
 }
 
-func (s *Service) ListSymbols(ctx context.Context, dir string) error { //nolint:cyclop,funlen
-	files, err := s.filesystem.ListFiles(ctx, dir)
+func (s *Service) ListSymbols(ctx context.Context, dir string, excludes []string) error { //nolint:cyclop,funlen
+	files, err := s.filesystem.ListFiles(ctx, dir, excludes)
 	if err != nil {
 		return fmt.Errorf("ListFiles: %w", err)
 	}
