@@ -51,6 +51,14 @@ func main() {
 					return service.FindSymbol(ctx, dir, symbol)
 				},
 			},
+			{
+				Name: "symbols",
+				Action: func(ctx context.Context, c *cli.Command) error {
+					dir := c.String("dir")
+
+					return service.ListSymbols(ctx, dir)
+				},
+			},
 		},
 	}
 
