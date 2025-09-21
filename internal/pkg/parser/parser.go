@@ -99,7 +99,7 @@ func (p *Parser) Parse(path string, content []byte) []*domain.Symbol { //nolint:
 		switch {
 		case bytes.Equal(filtered[match.End+1], []byte("{")):
 			symbol = domain.NewSymbol(domain.FunctionDefinition, string(filtered[match.Start-1]), path, line)
-		case bytes.Equal(filtered[match.End+1], []byte(";")):
+		case isFunctionName(filtered[match.Start-2]) && bytes.Equal(filtered[match.End+1], []byte(";")):
 			symbol = domain.NewSymbol(domain.FunctionDeclaration, string(filtered[match.Start-1]), path, line)
 		default:
 			symbol = domain.NewSymbol(domain.FunctionCall, string(filtered[match.Start-1]), path, line)
