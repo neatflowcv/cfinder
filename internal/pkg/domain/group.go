@@ -1,7 +1,7 @@
 package domain
 
 type Group struct {
-	Definition   *Symbol
+	Definitions  []*Symbol
 	Declarations []*Symbol
 	Calls        []*Symbol
 }
@@ -36,26 +36,14 @@ func NewGroups(symbols []*Symbol) []*Group {
 			continue
 		}
 
-		if len(definitions) > 2 { //nolint:mnd
-			panic("definitions > 2")
-		}
-
 		ret = append(ret, &Group{
-			Definition:   getFirst(definitions),
+			Definitions:  definitions,
 			Declarations: declarations,
 			Calls:        calls,
 		})
 	}
 
 	return ret
-}
-
-func getFirst(s []*Symbol) *Symbol {
-	if len(s) == 0 {
-		return nil
-	}
-
-	return s[0]
 }
 
 func groupBy[T any, K comparable](s []T, keyFunc func(T) K) map[K][]T {

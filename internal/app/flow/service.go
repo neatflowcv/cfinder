@@ -65,7 +65,7 @@ func (s *Service) FindSymbol(ctx context.Context, dir string, symbol string) err
 	return nil
 }
 
-func (s *Service) ListSymbols(ctx context.Context, dir string, excludes []string) error { //nolint:cyclop
+func (s *Service) ListSymbols(ctx context.Context, dir string, excludes []string) error { //nolint:cyclop,funlen
 	files, err := s.filesystem.ListFiles(ctx, dir, excludes)
 	if err != nil {
 		return fmt.Errorf("ListFiles: %w", err)
@@ -80,6 +80,8 @@ func (s *Service) ListSymbols(ctx context.Context, dir string, excludes []string
 
 		filteredFiles = append(filteredFiles, file)
 	}
+
+	var allSymbols []*domain.Symbol
 
 	for _, path := range filteredFiles {
 		file, err := s.filesystem.OpenFile(ctx, path)
@@ -96,30 +98,33 @@ func (s *Service) ListSymbols(ctx context.Context, dir string, excludes []string
 
 		_ = file.Close()
 
-		kind := map[domain.SymbolKind]string{
-			domain.FunctionDefinition:  "definition",
-			domain.FunctionDeclaration: "declaration",
-			domain.FunctionCall:        "call",
+		allSymbols = append(allSymbols, symbols...)
+	}
+
+	kind := map[domain.SymbolKind]string{
+		domain.FunctionDefinition:  "definition",
+		domain.FunctionDeclaration: "declaration",
+		domain.FunctionCall:        "call",
+	}
+
+	groups := domain.NewGroups(allSymbols)
+	for _, group := range groups {
+		if len(group.Definitions) == 0 {
+			continue
 		}
 
-		groups := domain.NewGroups(symbols)
+		s.printer.Print("%s\n", group.Definitions[0].Name)
 
-		for _, group := range groups {
-			if group.Definition == nil {
-				continue
-			}
+		for _, definition := range group.Definitions {
+			s.printer.Print(" - definition %s %s:%d\n", kind[definition.Kind], definition.Path, definition.Line)
+		}
 
-			s.printer.Print("%s\n", group.Definition.Name)
+		for _, declaration := range group.Declarations {
+			s.printer.Print(" - declaration %s:%d\n", declaration.Path, declaration.Line)
+		}
 
-			s.printer.Print(" - %s %s:%d\n", kind[group.Definition.Kind], group.Definition.Path, group.Definition.Line)
-
-			for _, declaration := range group.Declarations {
-				s.printer.Print(" - declaration %s:%d\n", declaration.Path, declaration.Line)
-			}
-
-			for _, call := range group.Calls {
-				s.printer.Print(" - call %s:%d\n", call.Path, call.Line)
-			}
+		for _, call := range group.Calls {
+			s.printer.Print(" - call %s:%d\n", call.Path, call.Line)
 		}
 	}
 
