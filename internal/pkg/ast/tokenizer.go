@@ -26,6 +26,7 @@ const (
 	TokenKindOpenMultiLineComment
 	TokenKindCloseMultiLineComment
 	TokenKindAsterisk
+	TokenKindDoubleQuote
 )
 
 type Token struct {
@@ -144,6 +145,9 @@ func detectKind(char byte, bufReader *bufio.Reader) TokenKind { //nolint:cyclop,
 
 	case ',':
 		return TokenKindComma
+
+	case '"':
+		return TokenKindDoubleQuote
 
 	default:
 		return TokenKindOther

@@ -78,3 +78,15 @@ func TestTokenizer_comma(t *testing.T) {
 	require.Equal(t, ast.TokenKindComma, tokens[3].Kind)
 	require.Equal(t, ast.TokenKindComma, tokens[5].Kind)
 }
+
+func TestTokenizer_doubleQuote(t *testing.T) {
+	t.Parallel()
+
+	reader := bytes.NewReader([]byte(`"hello"`))
+
+	tokens := ast.Tokenize(reader)
+
+	require.Len(t, tokens, 3)
+	require.Equal(t, ast.TokenKindDoubleQuote, tokens[0].Kind)
+	require.Equal(t, ast.TokenKindDoubleQuote, tokens[2].Kind)
+}
